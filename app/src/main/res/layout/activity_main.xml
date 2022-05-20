@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".MainActivity">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp">
+
+            <ImageView
+                android:id="@+id/tileOne"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/round"
+                android:scaleType="fitXY"
+                android:src="@drawable/zero"
+                tools:layout_editor_absoluteX="67dp" />
+
+            <ImageView
+                android:id="@+id/tileTwo"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/round"
+                android:scaleType="fitXY"
+                android:src="@drawable/zero"
+                tools:layout_editor_absoluteX="67dp" />
+
+            <ImageView
+                android:id="@+id/tileThree"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/round"
+                android:scaleType="fitXY"
+                android:src="@drawable/zero"
+                tools:layout_editor_absoluteX="67dp" />
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/epochText"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:text="@string/epochText" />
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+
+                android:id="@+id/epochSeekbar"
+                android:layout_width="300dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toStartOf="@+id/epochText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/mutationSeekbar" />
+
+
+            <TextView
+                android:id="@+id/learnRateText"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:text="@string/convSpeed" />
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/learningRateSeekBar"
+                android:layout_width="300dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="30dp"
+
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp">
+
+            <Button
+                android:id="@+id/learnBtn"
+                android:layout_width="150dp"
+                android:layout_height="100dp"
+                android:layout_marginHorizontal="30dp"
+                android:background="@drawable/btngrad"
+                android:text="@string/learn"
+                app:backgroundTint="@null" />
+
+            <Button
+                android:id="@+id/checkBtn"
+                android:layout_width="150dp"
+                android:layout_height="100dp"
+                android:layout_marginHorizontal="30dp"
+                android:background="@drawable/btngrad"
+                android:text="@string/test"
+                app:backgroundTint="@null" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp">
+
+            <Button
+                android:id="@+id/graph"
+                android:layout_width="300dp"
+                android:layout_height="60dp"
+                android:layout_marginHorizontal="30dp"
+                android:background="@drawable/btngrad"
+                android:text="@string/learnGraph"
+                app:backgroundTint="@null" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
