@@ -11,6 +11,7 @@ import java.text.DecimalFormat
 import kotlin.math.exp
 import kotlin.random.Random
 
+//превращение матрицы ответов в вектор
 fun vectorised(answersOutput: Array<Double>): Array<DoubleArray> {
     val arr = Array(answersOutput.size) { DoubleArray(3) { 0.0 } }
     for (i in answersOutput.indices) {
@@ -19,6 +20,7 @@ fun vectorised(answersOutput: Array<Double>): Array<DoubleArray> {
     return arr
 }
 
+//функция активации
 fun sigma(vector: Array<DoubleArray>): Array<DoubleArray> {
     for (i in vector.indices) {
         for (j in vector[i].indices) {
@@ -28,21 +30,14 @@ fun sigma(vector: Array<DoubleArray>): Array<DoubleArray> {
     return vector
 }
 
+//функция обратная функции активации
 fun sigmaDerivative(vector: Array<DoubleArray>): Array<DoubleArray> {
     val temp = clone(vector)
     val temp1 = clone(vector)
     return elementMultiply(sigma(temp1), minus(1, sigma(temp)))
 }
 
-fun minus(num: Int, vector: Array<DoubleArray>): Array<DoubleArray> {
-    for (i in vector.indices) {
-        for (j in vector[i].indices) {
-            vector[i][j] = num - vector[i][j]
-        }
-    }
-    return vector
-}
-
+//векторное умножение матриц
 fun multiply(first: Array<DoubleArray>, second: Array<DoubleArray>): Array<DoubleArray> {
 
     val product = Array(first.size) { DoubleArray(second[0].size) }
@@ -67,20 +62,6 @@ fun multiply(
             for (k in 0 until first[0].size) {
                 product[i][j] += first[i][k] * second[k][j]
             }
-        }
-    }
-
-    return product
-}
-
-fun elementMultiply(
-    first: Array<DoubleArray>,
-    second: Array<DoubleArray>
-): Array<DoubleArray> {
-    val product = Array(first.size) { DoubleArray(second[0].size) }
-    for (i in first.indices) {
-        for (j in first[0].indices) {
-            product[i][j] = first[i][j] * second[i][j]
         }
     }
 
@@ -119,6 +100,22 @@ fun multiply(num: Double, arr: DoubleArray): DoubleArray {
     return arr
 }
 
+//поэлементное умножение матриц
+fun elementMultiply(
+    first: Array<DoubleArray>,
+    second: Array<DoubleArray>
+): Array<DoubleArray> {
+    val product = Array(first.size) { DoubleArray(second[0].size) }
+    for (i in first.indices) {
+        for (j in first[0].indices) {
+            product[i][j] = first[i][j] * second[i][j]
+        }
+    }
+
+    return product
+}
+
+//сумма двух массивов
 fun sum(
     firstMatrix: Array<DoubleArray>,
     secondMatrix: DoubleArray
@@ -133,7 +130,7 @@ fun sum(
     return firstMatrix
 }
 
-
+//сумма значений по оси x
 fun collapseSum(arr: Array<DoubleArray>): DoubleArray {
     val summed = DoubleArray(arr[0].size) { 0.0 }
 
@@ -147,7 +144,7 @@ fun collapseSum(arr: Array<DoubleArray>): DoubleArray {
     return summed
 }
 
-
+//функции транспонирование матрицы
 fun transpose(arr: Array<DoubleArray>): Array<DoubleArray> {
     val row = arr[0].size
     val column = arr.size
@@ -172,6 +169,7 @@ fun transpose(arr: Array<Array<Int>>): Array<DoubleArray> {
     return transpose
 }
 
+//арифметические функции вычитания
 fun minus(first: DoubleArray, second: DoubleArray): DoubleArray {
     for (i in first.indices) {
         first[i] -= second[i]
@@ -179,6 +177,14 @@ fun minus(first: DoubleArray, second: DoubleArray): DoubleArray {
     return first
 }
 
+fun minus(num: Int, vector: Array<DoubleArray>): Array<DoubleArray> {
+    for (i in vector.indices) {
+        for (j in vector[i].indices) {
+            vector[i][j] = num - vector[i][j]
+        }
+    }
+    return vector
+}
 
 fun minus(
     firstMatrix: Array<DoubleArray>,
@@ -205,6 +211,7 @@ fun minus(
     return firstMatrix
 }
 
+//функции вывода на экран
 fun print(m: Array<DoubleArray>) {
     for (i in m) {
         for (j in i) {
@@ -231,15 +238,17 @@ fun print(m: DoubleArray) {
     println()
 }
 
-fun findMax(hout: Array<DoubleArray>): Int {
+//нахождение максимума в массиве
+fun findMax(arr: Array<DoubleArray>): Int {
     var maxInd = 0
-    for (i in hout[0].indices) {
-        if (hout[0][maxInd] < hout[0][i])
+    for (i in arr[0].indices) {
+        if (arr[0][maxInd] < arr[0][i])
             maxInd = i
     }
     return maxInd
 }
 
+// функция копирования массива
 fun clone(arr: Array<DoubleArray>): Array<DoubleArray> {
     val temp = Array(arr.size) { DoubleArray(arr[0].size) { 0.0 } }
     for (i in arr.indices) {
@@ -250,6 +259,23 @@ fun clone(arr: Array<DoubleArray>): Array<DoubleArray> {
     return temp
 }
 
+//функция тестирования входного значения на обученной сети
+fun testInput(input: Array<Int>): String {
+    val outputHiddenLayer = sum(arrayOf(multiply(input, sharedWeight1)), sharedOffSet1)
+    val sigma = sigma(outputHiddenLayer)
+    val outputLayer = sum(multiply(sigma, sharedWeight2), sharedOffSet2)
+    val sigmaOutputLayer = sigma(outputLayer)
+    val df = DecimalFormat("#.###")
+    df.roundingMode = RoundingMode.DOWN
+    var result = "["
+    for (i in sigmaOutputLayer[0].indices) {
+        result += df.format(sigmaOutputLayer[0][i]) + ", "
+    }
+    result += "]"
+    return result
+}
+
+//Обучение нейронной сети
 fun learning(epochNum: Int, learningRate: Double) {
     val answersInput = arrayOf(
         arrayOf(1, 1, 0),
@@ -265,8 +291,8 @@ fun learning(epochNum: Int, learningRate: Double) {
     val answersOutput = arrayOf(
         1.0, 1.0, 2.0, 3.0, 2.0, 3.0, 3.0, 1.0, 2.0
     )
-    var preciseness = ArrayList<Float>()
-    var error = ArrayList<Float>()
+    val preciseness = ArrayList<Float>()
+    val error = ArrayList<Float>()
 
     var weight = Array(3) { DoubleArray(3) { Random.nextDouble(0.0, 1.0) } }
     var offSet = DoubleArray(3) { Random.nextDouble(0.0, 1.0) } // смещение
@@ -298,9 +324,10 @@ fun learning(epochNum: Int, learningRate: Double) {
             backFromSigmaLayer
         ) // определяем значение производной в точках весов
         val neuronOffset = collapseSum(backFromSigmaLayer)//определяем смещение для нейрона
-        
+
         val newSigmaHiddenLayer = multiply(backFromSigmaLayer, (transpose(weight2)))
-        val newHiddenLayer = elementMultiply(newSigmaHiddenLayer, sigmaDerivative(outputHiddenLayer))
+        val newHiddenLayer =
+            elementMultiply(newSigmaHiddenLayer, sigmaDerivative(outputHiddenLayer))
         val newWeights = multiply(transpose(answersInput), newHiddenLayer)
         val newOffset = collapseSum(newHiddenLayer)
 
@@ -345,17 +372,3 @@ fun learning(epochNum: Int, learningRate: Double) {
     sharedError = error
 }
 
-fun testInput(input: Array<Int>): String {
-    val t1 = sum(arrayOf(multiply(input, sharedWeight1)), sharedOffSet1)
-    val h1 = sigma(t1)
-    val tout = sum(multiply(h1, sharedWeight2), sharedOffSet2)
-    val hout = sigma(tout)
-    val df = DecimalFormat("#.###")
-    df.roundingMode = RoundingMode.DOWN
-    var result = "["
-    for (i in hout[0].indices) {
-        result += df.format(hout[0][i]) + ", "
-    }
-    result += "]"
-    return result
-}

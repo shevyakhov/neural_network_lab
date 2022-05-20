@@ -10,6 +10,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 
+//вывод графика
 class DisplayActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDisplayBinding
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -27,10 +27,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUI() {
+        //кнопка показа графика
         binding.graph.setOnClickListener {
             intent = Intent(this, DisplayActivity::class.java)
             startActivity(intent)
         }
+        //кнопка отправки значений для теста сети
         binding.checkBtn.setOnClickListener {
             val one = oneOrZero(1)
             val two = oneOrZero(2)
@@ -38,9 +40,11 @@ class MainActivity : AppCompatActivity() {
             val list = arrayOf(one, two, three)
             Toast.makeText(this, testInput(list), Toast.LENGTH_LONG).show()
         }
+        //запустить обучение
         binding.learnBtn.setOnClickListener {
             learning(epochNum, learningRate)
         }
+        //обмен значений с 1 до 0 и обратно
         binding.tileOne.setOnClickListener {
             if (firstImg == R.drawable.zero) {
                 firstImg = R.drawable.one
@@ -50,7 +54,6 @@ class MainActivity : AppCompatActivity() {
                 binding.tileOne.setImageResource(firstImg)
             }
         }
-
         binding.tileTwo.setOnClickListener {
             if (secondImg == R.drawable.zero) {
                 secondImg = R.drawable.one
@@ -74,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         binding.epochSeekbar.max = 1000
         binding.learningRateSeekBar.max = 100
 
+        //полоска значений
         binding.epochSeekbar.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
 
