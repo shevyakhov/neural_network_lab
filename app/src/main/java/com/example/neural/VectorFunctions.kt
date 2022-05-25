@@ -9,6 +9,7 @@ import com.example.neural.SharedLists.sharedWeight2
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import kotlin.math.exp
+import kotlin.math.ln
 import kotlin.random.Random
 
 //превращение матрицы ответов в вектор
@@ -296,8 +297,8 @@ fun learning(epochNum: Int, learningRate: Double) {
 
     var weight = Array(3) { DoubleArray(3) { Random.nextDouble(0.0, 1.0) } }
     var offSet = DoubleArray(3) { Random.nextDouble(0.0, 1.0) } // смещение
-    var weight2 = Array(3) { DoubleArray(3) { Random.nextDouble(0.0, 1.0) } }
-    var offSet2 = DoubleArray(3) { Random.nextDouble(0.0, 1.0) }  // смещение
+    var weightHidden = Array(3) { DoubleArray(3) { Random.nextDouble(0.0, 1.0) } }
+    var offSetHidden = DoubleArray(3) { Random.nextDouble(0.0, 1.0) }  // смещение
 
     for (epoch in 0..epochNum) {
         var outputHiddenLayer = sum(
@@ -307,17 +308,23 @@ fun learning(epochNum: Int, learningRate: Double) {
         val temp = clone(outputHiddenLayer)
         var sigma = sigma(temp) // преобразуем значения от 0 до 1
 
-        var outputLayer = sum(multiply(sigma, weight2), offSet2) // получаем значения выходного слоя
+        var outputLayer =
+            sum(multiply(sigma, weightHidden), offSetHidden) // получаем значения выходного слоя
 
         var sigmaOutputLayer = sigma(outputLayer) // получаем итоговые значения в промежутке 0..1
 
         val rightAnswerVector = vectorised(answersOutput) // проебразуем правильные ответы в вектор
-
+        //вычисление ошибки методом кросс-энтропии
+        val errorCrossEntropy = crossEntropy(
+            clone(sigmaOutputLayer),
+            clone(rightAnswerVector)
+        )
         //идем назад по всей сети
         val backFromSigmaLayer = minus(
             sigmaOutputLayer,
             rightAnswerVector
         ) //вычисляем отдаленность от правильного ответа
+
 
         val backDerivativeWeight = multiply(
             transpose(sigma),
@@ -325,7 +332,7 @@ fun learning(epochNum: Int, learningRate: Double) {
         ) // определяем значение производной в точках весов
         val neuronOffset = collapseSum(backFromSigmaLayer)//определяем смещение для нейрона
 
-        val newSigmaHiddenLayer = multiply(backFromSigmaLayer, (transpose(weight2)))
+        val newSigmaHiddenLayer = multiply(backFromSigmaLayer, (transpose(weightHidden)))
         val newHiddenLayer =
             elementMultiply(newSigmaHiddenLayer, sigmaDerivative(outputHiddenLayer))
         val newWeights = multiply(transpose(answersInput), newHiddenLayer)
@@ -336,16 +343,16 @@ fun learning(epochNum: Int, learningRate: Double) {
 
         offSet = minus(offSet, multiply(learningRate, newOffset))
 
-        weight2 = minus(weight2, multiply(learningRate, backDerivativeWeight))
+        weightHidden = minus(weightHidden, multiply(learningRate, backDerivativeWeight))
 
-        offSet2 = minus(offSet2, multiply(learningRate, neuronOffset))
+        offSetHidden = minus(offSetHidden, multiply(learningRate, neuronOffset))
 
         var counter = 0
         for (i in answersInput.indices) {
 
             outputHiddenLayer = sum(arrayOf(multiply(answersInput[i], weight)), offSet)
             sigma = sigma(outputHiddenLayer)
-            outputLayer = sum(multiply(sigma, weight2), offSet2)
+            outputLayer = sum(multiply(sigma, weightHidden), offSetHidden)
             sigmaOutputLayer = sigma(outputLayer)
             if ((findMax(sigmaOutputLayer) + 1).toDouble() == answersOutput[i])
                 counter++
@@ -354,21 +361,37 @@ fun learning(epochNum: Int, learningRate: Double) {
         if ((epoch + 1) % 10 == 0) {
             println("Точность на эпохе ${epoch + 1} =  ${counter.toFloat() / 9}")
             preciseness.add(counter.toFloat() / 9)
-            error.add(1 - counter.toFloat() / 9)
+            error.add(errorCrossEntropy.toFloat())
         }
         if (counter.toDouble() / 9 == 1.0) {
             println("Точность на эпохе ${epoch + 1} =  ${counter.toFloat() / 9}")
             preciseness.add(counter.toFloat() / 9)
-            error.add(1 - counter.toFloat() / 9)
+            error.add(errorCrossEntropy.toFloat())
             break
         }
 
     }
     sharedWeight1 = weight
     sharedOffSet1 = offSet
-    sharedWeight2 = weight2
-    sharedOffSet2 = offSet2
+    sharedWeight2 = weightHidden
+    sharedOffSet2 = offSetHidden
     sharedPreciseness = preciseness
     sharedError = error
+}
+
+//вычисление ошибки методо кросс-энтропии
+fun crossEntropy(prob: Array<DoubleArray>, right: Array<DoubleArray>): Double {
+    val temp = clone(prob)
+    for (i in prob.indices) {
+        for (j in prob[i].indices) {
+            temp[i][j] = -right[i][j] * ln(prob[i][j]) - (1 - right[i][j]) * ln(1 - prob[i][j])
+        }
+    }
+    var cross = ArrayList<Double>()
+    for (i in temp.indices) {
+        cross.add(temp[i].average())
+    }
+    return cross.average()
+
 }
 

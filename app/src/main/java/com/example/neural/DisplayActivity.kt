@@ -45,7 +45,7 @@ class DisplayActivity : AppCompatActivity() {
         lineError.color = Color.RED;
         lineError.setCircleColor(Color.RED);
         lineDataset.setCircleColor(R.color.yellow)
-        lineDataset.circleRadius = 0F
+        lineDataset.circleRadius = 1F
         lineError.lineWidth = 2f;
         lineDataset.lineWidth = 2f;
         lineDataset.color = resources.getColor(R.color.yellow)
